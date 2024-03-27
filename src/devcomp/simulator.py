@@ -22,7 +22,7 @@ class Simulator:
         infile = filename
         try:
             if self.simulator == 'spectre':
-                cmd_args = [self.__simulator, filename] + [*self.__args]
+                cmd_args = [self.__simulator, filename] #+ [*self.__args]
                 cp = subprocess.run(cmd_args, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
             elif self.simulator == 'ngspice':
                 cmd_args = [self.__simulator, '-b', filename]

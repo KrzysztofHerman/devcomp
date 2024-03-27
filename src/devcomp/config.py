@@ -52,6 +52,7 @@ class Config:
         
     def _generate_netlist(self):
         modelfile = self._config['MODEL']['FILE']
+        corner = self._config['MODEL']['CORNER']
         paramfile = self._config['MODEL']['PARAMFILE']
         width = self._config['SWEEP']['WIDTH']
         modelp = self._config['MODEL']['MODELP']
@@ -69,46 +70,31 @@ class Config:
         Vsb = self._config['SWEEP']['VSB'][0]
         NFING = self._config['SWEEP']['NFING']
         if simulator == "spectre":
-            try:
-                mn_supplement = '\n\t'.join(json.loads(self._config['MODEL']['MN']))
-            except json.decoder.JSONDecodeError:
-                raise "Error parsing config: make sure MN has no weird characters in it, and that the list isn't terminated with a trailing ','"
-            try:
-                mp_supplement = '\n\t'.join(json.loads(self._config['MODEL']['MP']))
-            except json.decoder.JSONDecodeError:
-                raise "Error parsing config: make sure MP has no weird characters in it, and that the list isn't terminated with a trailing ','"
             
             netlist = [
-                f"//pysweep.spice",
-                f"include {modelfile}",
-                f'include "{paramfile}"\n',   
-                f'save mn:oppoint',  
-                f'save mp:oppoint',
+                f"//pysweep.scs",
+		f'simulator lang=spectre',
+		f'global 0',
+                f'include "{modelfile}" section = {corner}',
+		f'\n',
+                f'include "{paramfile}" ',
+		f'\n',
+		f'V0 (net2 0) vsource dc={Vds} type=dc',
+		f'V1 (net1 0) vsource dc={Vgs} type=dc',
+		f'\n',
+		f'simulatorOptions options psfversion="1.4.0" reltol=1e-3 vabstol=1e-6 \ ',
+    		f'iabstol=1e-12 temp=27 tnom=27 scalem=1.0 scale=1.0 gmin=1e-12 rforce=1 \ ',
+		f'maxnotes=5 maxwarns=5 digits=5 cols=80 pivrel=1e-3 \ ',
+	        f'sensfile="../psf/sens.output" checklimitdest=psf ignorezerovar=yes', 
+		f'\n',
+		f'dcOp dc write="spectre.dc" maxiters=150 maxsteps=10000 annotate=status',
+		f'\n',
+		f'dcOpInfo info what=oppoint where=file file=dcpoint.out',
+		f'\n',
+		f'saveOptions options save=allpub currents=all subcktprobelvl=5 \ ',
+    		f'saveahdlvars=all',
                 f'\n',
-                f'parameters gs=0.498 ds=0.2 L=length*1e-6 Wtot={width}e-6 W=500n',
-                f'\n',
-                f'vnoi     (vx  0)         vsource dc=0',  
-                f'vdsn     (vdn vx)         vsource dc=ds',   
-                f'vgsn     (vgn 0)         vsource dc=gs',   
-                f'vbsn     (vbn 0)         vsource dc=-sb',  
-                f'vdsp     (vdp vx)         vsource dc=-ds',  
-                f'vgsp     (vgp 0)         vsource dc=-gs',  
-                f'vbsp     (vbp 0)         vsource dc=sb',  
-                f'\n',	 
-                f'\n',	 
-                f'mp (vdp vgp 0 vbp) {modelp} {mp_supplement}',
-                f'\n',	 
-                f'mn (vdn vgn 0 vbn) {modeln} {mn_supplement}',
-                f'\n',	 
-                f'simulatorOptions options gmin=1e-13 reltol=1e-4 vabstol=1e-6 iabstol=1e-10 temp={temp} tnom=27',  
-                f'sweepvds sweep param=ds start=0 stop={VDS_max} step={VDS_step} {{',  
-                f'sweepvgs dc param=gs start=0 stop={VGS_max} step={VGS_step}',  
-                f'}}', 
-                f'sweepvds_noise sweep param=ds start=0 stop={VDS_max} step={VDS_step} {{', 
-                f'	sweepvgs_noise noise freq=1 oprobe=vnoi param=gs start=0 stop={VGS_max} step={VGS_step}', 
-                f'}}'
                 ]
-            netlist[3:3] = eval(additional_settings)
         elif simulator == 'ngspice':
             netlist = [
                 f"*//pysweep.spice",
@@ -124,7 +110,7 @@ class Config:
                 f'\n',
                 f".include ./{paramfile}",
                 f'\n',
-                f".lib {modelfile}",
+                f".lib {modelfile} {corner}",
                 f'.control',
                 f'*---- NMOS',
                 f'pre_osdi ./psp103_nqs.osdi',
@@ -135,5 +121,5 @@ class Config:
                 f'.end',
             ]
         #       netlist[-9:-9] = eval(additional_settings)
-        with open('pysweep.spice', 'w') as outfile:
+        with open('pysweep.scs', 'w') as outfile:
             outfile.write('\n'.join(netlist))

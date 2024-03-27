@@ -2,3 +2,7 @@
 *.osdi
 *.spice
 *.pyc
+*.scs
+*.dc
+*.log
+

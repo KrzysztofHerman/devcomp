@@ -5,13 +5,7 @@ from config import *
 from simulator import Simulator
 
 SIMULATOR_ARGS = {
-    'spectre' : ['+escchars', 
-                '=log', 
-                './sweep/psf/spectre.out', 
-                '-format', 
-                'psfascii', 
-                '-raw', 
-                './sweep/psf'],
+    'spectre' : [''],
 
     'ngspice' : ['-b']
 }
@@ -53,18 +47,20 @@ class Sweep:
                     simulator = self._simulator.simulator
                     # !TODO necessary to change extension?
                     if simulator == 'spectre':
-                        cp = self._simulator.run('pysweep.scs')
+                        if not os.path.exists(sim_path):
+                            os.makedirs(sim_path)
+                        cp = self._simulator.run('./../../pysweep.scs',**{'cwd': sim_path})
                     elif simulator == 'ngspice':
                         if not os.path.exists(sim_path):
                             os.makedirs(sim_path)
-                        cp = self._simulator.run('./../../pysweep.spice', **{'cwd' : sim_path})
+                        cp = self._simulator.run('./../../pysweep.spice',**{'cwd': sim_path})
 
 
     def _write_params(self, width=1, length=1, ngates=1):
         if self._simulator.simulator == 'spectre':
-            ext = 'scs'
-            with open(f'params.{ext}', 'w') as outfile:
-                outfile.write(f"parameters width={width}")
+            paramfile = self._config['MODEL']['PARAMFILE']
+            with open(f'{paramfile}', 'w') as outfile:
+            	outfile.write(f'N0 (net2 net1 0 0) sg13_lv_nmos w={width*10e-6} l={length*10e-6} ng={int(ngates)} ad=0 as=0 pd=0 ps=0 m=1')
         elif self._simulator.simulator == 'ngspice':
             paramfile = self._config['MODEL']['PARAMFILE']
             with open(f'{paramfile}', 'w') as outfile:

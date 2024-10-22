@@ -69,41 +69,51 @@ class Config:
         Vds = VDS_max
         Vsb = self._config['SWEEP']['VSB'][0]
         NFING = self._config['SWEEP']['NFING']
+        
         if simulator == "spectre":
             
             netlist = [
-                f"//pysweep.scs",
+        f"//pysweep.scs",
 		f'simulator lang=spectre',
 		f'global 0',
-                f'include "{modelfile}" section = {corner}',
+        f'include "{modelfile}" section = {corner}',
 		f'\n',
-                f'include "{paramfile}" ',
+        f'include "{paramfile}" ',
 		f'\n',
-		f'V0 (net2 0) vsource dc={Vds} type=dc',
-		f'V1 (net1 0) vsource dc={Vgs} type=dc',
+        f' I0 (drain_n 0) isource dc=-1m type=dc ',
+        f' V0 (source_n 0) vsource dc=0 mag=1 phase=0 type=sine ampl=1 sinephase=0 freq=1K', 
+        f' V1 (source_n bulk_n) vsource dc=0', 
+        f' V2 (drain_n gate_n) vsource dc=0', 
 		f'\n',
-		f'simulatorOptions options psfversion="1.4.0" reltol=1e-3 vabstol=1e-6 \ ',
-    		f'iabstol=1e-12 temp=27 tnom=27 scalem=1.0 scale=1.0 gmin=1e-12 rforce=1 \ ',
-		f'maxnotes=5 maxwarns=5 digits=5 cols=80 pivrel=1e-3 \ ',
-	        f'sensfile="../psf/sens.output" checklimitdest=psf ignorezerovar=yes', 
+        f' simulatorOptions options psfversion="1.1.0" reltol=1e-3 vabstol=1e-6 \
+           iabstol=1e-12 temp=27 tnom=27 scalem=1.0 scale=1.0 gmin=1e-12 rforce=1 \
+           maxnotes=5 maxwarns=5 digits=5 cols=80 pivrel=1e-3 \
+           sensfile="../psf/sens.output" checklimitdest=psf ignorezerovar=yes ',
 		f'\n',
-		f'dcOp dc write="spectre.dc" maxiters=150 maxsteps=10000 annotate=status',
-		f'\n',
-		f'dcOpInfo info what=oppoint where=file file=dcpoint.out',
-		f'\n',
+        f'  noise ( net3 ) noise start=1M stop=10G annotate=status \
+            modelParameter info what=models where=rawfile \
+            element info what=inst where=rawfile \
+            outputParameter info what=output where=rawfile \
+            designParamVals info what=parameters where=rawfile \
+            primitives info what=primitives where=rawfile \
+            subckts info what=subckts where=rawfile',
+        f'\n',
 		f'saveOptions options save=allpub currents=all subcktprobelvl=5 \ ',
-    		f'saveahdlvars=all',
-                f'\n',
+    	f'saveahdlvars=all',
+        f'\n',
                 ]
+            with open('pysweep.scs', 'w') as outfile:
+                outfile.write('\n'.join(netlist))
         elif simulator == 'ngspice':
             netlist = [
                 f"*//pysweep.spice",
                 f"******* generated circuit ************ ",
                 f'\n',
                 f'\n',
-                f'Vgs_n      gate_n     GND         {Vgs}',
-                f'Vds_n      drain_n    GND         {Vds}',
-                f'Vb_n       bulk_n     GND         {-Vsb}',
+                f'I1         0          drain_n    DC  1m',
+                f'Vdg_n      drain_n    gate_n     DC   0',
+                f'Vsb_n      source_n   bulk_n     DC   0',
+                f'V1         bulk_n     GND    DC 0 SIN(0 1 1K 0 0 0) AC 1 ACPHASE 0',
                 f'\n',
                 f'\n',
                 f'.param temp={temp}',
@@ -113,13 +123,13 @@ class Config:
                 f".lib {modelfile} {corner}",
                 f'.control',
                 f'*---- NMOS',
-                f'pre_osdi ./psp103_nqs.osdi',
-                f'op',
-                f'show all > op_point.out',
+                f'noise v(drain_n) V1 dec 101 1MEG 10G',
+                f'setplot noise1',
+                f'wrdata onoise.csv onoise_spectrum',
                 f'.endc',
                 f'.GLOBAL GND',
                 f'.end',
             ]
         #       netlist[-9:-9] = eval(additional_settings)
-        with open('pysweep.scs', 'w') as outfile:
-            outfile.write('\n'.join(netlist))
+            with open('pysweep.spice', 'w') as outfile:
+                outfile.write('\n'.join(netlist))

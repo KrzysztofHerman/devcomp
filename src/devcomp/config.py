@@ -73,31 +73,34 @@ class Config:
         if simulator == "spectre":
             
             netlist = [
-        f"//pysweep.scs",
-		f' simulator lang=spectre',
-		f' global 0',
-        f' include "{modelfile}" section = {corner}',
-		f'\n',
-        f' include "{paramfile}" ',
-		f'\n',
-        f' I0 (drain_n 0) isource dc=-1m type=dc ',
-        f' V0 (source_n 0) vsource dc=0 mag=1 phase=0 type=sine ampl=1 sinephase=0 freq=1K', 
-        f' V1 (source_n bulk_n) vsource dc=0', 
-        f' V2 (drain_n gate_n) vsource dc=0', 
-		f'\n',
-        f' simulatorOptions options psfversion="1.1.0" reltol=1e-3 vabstol=1e-6 \
-           iabstol=1e-12 temp=27 tnom=27 scalem=1.0 scale=1.0 gmin=1e-12 rforce=1 \
-           maxnotes=5 maxwarns=5 digits=5 cols=80 pivrel=1e-3 \
-           sensfile="../psf/sens.output" checklimitdest=psf ignorezerovar=yes ',
-		f'\n',
-        f'  noise ( drain_n ) noise start=1M stop=10G annotate=status ',
-        f'\n',
-		f' saveOptions options save=allpub currents=all subcktprobelvl=5 saveahdlvars=all',
-        f'\n',
-                ]
+                f" //pysweep.scs",
+                f' simulator lang=spectre',
+                f' global 0',
+                f' include "{modelfile}" section = {corner}',
+                f'\n',
+                f' include "{paramfile}" ',
+                f'\n',
+                f' I0 (drain_n 0) isource dc=-1m type=dc ',
+                f' V0 (source_n 0) vsource dc=0 mag=1 phase=0 type=sine ampl=1 sinephase=0 freq=1K', 
+                f' V1 (source_n bulk_n) vsource dc=0', 
+                f' V2 (drain_n gate_n) vsource dc=0', 
+                f'\n',
+                f' simulatorOptions options psfversion="1.1.0" reltol=1e-3 vabstol=1e-6 \
+                   iabstol=1e-12 temp=27 tnom=27 scalem=1.0 scale=1.0 gmin=1e-12 rforce=1 \
+                   maxnotes=5 maxwarns=5 digits=5 cols=80 pivrel=1e-3 \
+                   sensfile="../psf/sens.output" checklimitdest=psf ignorezerovar=yes ',
+                f'\n',
+                f' noise ( drain_n ) noise start=1M stop=10G annotate=status ',
+                f'\n',
+                f' saveOptions options save=allpub currents=all subcktprobelvl=5 saveahdlvars=all',
+                f'\n',
+                        ]
+
             with open('pysweep.scs', 'w') as outfile:
                 outfile.write('\n'.join(netlist))
+ 
         elif simulator == 'ngspice':
+        
             netlist = [
                 f"*//pysweep.spice",
                 f"******* generated circuit ************ ",

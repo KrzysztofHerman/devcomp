@@ -8,10 +8,9 @@ import sys
 def plot_data(csv_file):
     # Load the CSV data into a pandas DataFrame (assuming no header)
     data = pd.read_csv(csv_file, sep=' ', header=None)
-    print(data.iloc[:,3])
     # Plot semilogx (logarithmic x-axis)
     plt.figure()
-    plt.loglog(data.iloc[:,1], data.iloc[:,3])
+    plt.loglog(data.iloc[:,0], data.iloc[:,1])
     plt.title('Semilogx Plot (Logarithmic X-Axis)')
     plt.xlabel('X (Log Scale)')
     plt.ylabel('Y')

@@ -90,7 +90,7 @@ class Config:
            maxnotes=5 maxwarns=5 digits=5 cols=80 pivrel=1e-3 \
            sensfile="../psf/sens.output" checklimitdest=psf ignorezerovar=yes ',
 		f'\n',
-        f'  noise ( drain_n ) noise start=1M stop=10G annotate=status ',
+        f'  noise ( drain_n ) noise start=1M stop=10G dec=101 annotate=status ',
         f'\n',
 		f' saveOptions options save=allpub currents=all subcktprobelvl=5 saveahdlvars=all',
         f'\n',

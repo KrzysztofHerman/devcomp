@@ -2,7 +2,7 @@ import subprocess
 import logging
 
 class Simulator:
-    def __init__(self, simulator, *args):
+    def __init__(self, simulator, args):
         self.__simulator = simulator
         self.__args = list(args)
     
@@ -22,7 +22,9 @@ class Simulator:
         infile = filename
         try:
             if self.simulator == 'spectre':
-                cmd_args = [self.__simulator, filename] #+ [*self.__args]
+   #            cmd_args = [self.__simulator, filename] + ['escchars -format psfascii -raw'] #+ [*self.__args]
+                cmd_args = [self.__simulator, filename] + [*self.__args]
+                print(cmd_args)
                 cp = subprocess.run(cmd_args, check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, **kwargs)
             elif self.simulator == 'ngspice':
                 cmd_args = [self.__simulator, '-b', filename]

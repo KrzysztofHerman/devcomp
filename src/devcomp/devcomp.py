@@ -5,18 +5,17 @@ from config import *
 from simulator import Simulator
 
 SIMULATOR_ARGS = {
-    'spectre' : [''],
+    'spectre' : ['+escchars', 
+                '=log', 
+                '.spectre.out', 
+                '-format', 
+                'psfascii', 
+                '-raw', 
+                '.'],
 
     'ngspice' : ['-b']
 }
 
-
-def csum(a, b):
-    return a + b
-
-
-def devcomp():
-    print("Hello")
 
 
 def main():
@@ -43,13 +42,14 @@ class Sweep:
                     self._write_params(width = WIDTH, length=L, ngates=NFING)
  
                     sim_path = f"./sweep/psf_{i}_{j}_{k}"
-                    self._simulator.directory = sim_path
+                    self._simulator.directory = f"."
                     simulator = self._simulator.simulator
                     # !TODO necessary to change extension?
                     if simulator == 'spectre':
                         if not os.path.exists(sim_path):
                             os.makedirs(sim_path)
-                        cp = self._simulator.run('./../../pysweep.scs',**{'cwd': sim_path})
+                        #cp = self._simulator.run('./../../pysweep.scs')
+                        cp = self._simulator.run('./../../pysweep.scs',**{'cwd':sim_path})
                     elif simulator == 'ngspice':
                         if not os.path.exists(sim_path):
                             os.makedirs(sim_path)

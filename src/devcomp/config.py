@@ -74,11 +74,11 @@ class Config:
             
             netlist = [
         f"//pysweep.scs",
-		f'simulator lang=spectre',
-		f'global 0',
-        f'include "{modelfile}" section = {corner}',
+		f' simulator lang=spectre',
+		f' global 0',
+        f' include "{modelfile}" section = {corner}',
 		f'\n',
-        f'include "{paramfile}" ',
+        f' include "{paramfile}" ',
 		f'\n',
         f' I0 (drain_n 0) isource dc=-1m type=dc ',
         f' V0 (source_n 0) vsource dc=0 mag=1 phase=0 type=sine ampl=1 sinephase=0 freq=1K', 
@@ -90,16 +90,9 @@ class Config:
            maxnotes=5 maxwarns=5 digits=5 cols=80 pivrel=1e-3 \
            sensfile="../psf/sens.output" checklimitdest=psf ignorezerovar=yes ',
 		f'\n',
-        f'  noise ( net3 ) noise start=1M stop=10G annotate=status \
-            modelParameter info what=models where=rawfile \
-            element info what=inst where=rawfile \
-            outputParameter info what=output where=rawfile \
-            designParamVals info what=parameters where=rawfile \
-            primitives info what=primitives where=rawfile \
-            subckts info what=subckts where=rawfile',
+        f'  noise ( drain_n ) noise start=1M stop=10G annotate=status ',
         f'\n',
-		f'saveOptions options save=allpub currents=all subcktprobelvl=5 \ ',
-    	f'saveahdlvars=all',
+		f' saveOptions options save=allpub currents=all subcktprobelvl=5 saveahdlvars=all',
         f'\n',
                 ]
             with open('pysweep.scs', 'w') as outfile:

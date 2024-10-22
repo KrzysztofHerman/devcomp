@@ -7,7 +7,7 @@ import sys
 # Function to read and aggregate data from CSVs in a directory structure
 def aggregate_data(root_dir, csv_file):
     all_data = []
-
+    
     # Walk through the directory structure
     for subdir, _, files in os.walk(root_dir):
         if csv_file in files:
@@ -36,10 +36,11 @@ def plot_combined_data(combined_data):
     # Plot semilogx (logarithmic x-axis) for the combined data
     plt.figure()
     plt.loglog(combined_data.iloc[:, 1], combined_data.iloc[:, 3],label='Combined Data')  # Column 0 for X, 1 for Y
-    plt.title('Log-Log Plot (Logarithmic X and Y Axes)')
-    plt.xlabel('X (Log Scale)')
-    plt.ylabel('Y (Log Scale)')
+    plt.title('NGspice output voltage noise simulation W <1u:1u:10u>, L=0.5u, Ng=<1:4> ')
+    plt.xlabel('frequency [Hz]')
+    plt.ylabel('Noise PSD V^2/Hz')
     plt.grid(True)
+    plt.savefig('ngspice.png')
     plt.show()
 
 # Function to save the combined data to a file
@@ -60,7 +61,7 @@ if __name__ == "__main__":
 
     # Aggregate the data from all directories
     combined_data = aggregate_data(root_dir, csv_file)
-    
-    save_combined_data(combined_data, 'combined.csv')
+    fname  = root_dir + 'combined.csv'
+    save_combined_data(combined_data, fname)
     # Plot the combined data
     plot_combined_data(combined_data)

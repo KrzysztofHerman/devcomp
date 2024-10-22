@@ -106,16 +106,10 @@ class Config:
                 f"******* generated circuit ************ ",
                 f'\n',
                 f'\n',
-                f'L_X1          netl       gate_n       1M',
-                f'C_X1            in       gate_n       1M',
-                f'Vgs           netl        GND     DC   {Vgs}',
-                f'Vb_n      source_n        GND     DC   0',
-                f'Vs_n        bulk_n        GND     DC   0',
-                f'V1              in        GND    DC 0 SIN(0 1 1K 0 0 0) AC 1 ACPHASE 0',
-                f'Vds           nets        GND     DC  {Vds}',
-                f'Vsrc1      drain_n       nets     DC 1.0',
-                f'Hsrc1         sid         GND  Vsrc1   1',
-                f'R1            sid         GND         1G',
+                f'I1         0          drain_n    DC  1m',
+                f'Vdg_n      drain_n    gate_n     DC   0',
+                f'Vsb_n      source_n   bulk_n     DC   0',
+                f'V1         bulk_n     GND    DC 0 SIN(0 1 1K 0 0 0) AC 1 ACPHASE 0',
                 f'\n',
                 f'\n',
                 f'.param temp={temp}',
@@ -125,13 +119,13 @@ class Config:
                 f".lib {modelfile} {corner}",
                 f'.control',
                 f'*---- NMOS',
-                f'noise v(sid) V1 dec 101 1k 10G',
+                f'noise v(drain_n) V1 dec 101 1MEG 10G',
                 f'setplot noise1',
-                f'wrdata onoise2.csv onoise_spectrum',
+                f'wrdata onoise.csv onoise_spectrum',
                 f'.endc',
                 f'.GLOBAL GND',
                 f'.end',
             ]
         #       netlist[-9:-9] = eval(additional_settings)
             with open('pysweep.spice', 'w') as outfile:
-               outfile.write('\n'.join(netlist))
+                outfile.write('\n'.join(netlist))

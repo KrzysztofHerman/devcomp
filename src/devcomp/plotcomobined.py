@@ -35,13 +35,34 @@ def aggregate_data(root_dir, csv_file):
 def plot_combined_data(combined_data):
     # Plot semilogx (logarithmic x-axis) for the combined data
     plt.figure()
-    plt.loglog(combined_data.iloc[:, 1], combined_data.iloc[:, 3],label='Combined Data')  # Column 0 for X, 1 for Y
-    plt.title('NGspice output voltage noise simulation W <1u:1u:10u>, L=0.5u, Ng=<1:4> ')
+    plt.semilogx(combined_data.iloc[:, 1], combined_data.iloc[:, 3],label='Combined Data')  # Column 0 for X, 1 for Y
+    plt.title('NGspice output noise figure NF  W <1u:1u:10u>, L=0.5u, Ng=<1:4> ')
     plt.xlabel('frequency [Hz]')
-    plt.ylabel('Noise PSD V^2/Hz')
+    plt.ylabel('NF')
     plt.grid(True)
-    plt.savefig('ngspice.png')
+    plt.savefig('ngspice-nf.png')
     plt.show()
+    
+    plt.figure()
+    plt.semilogx(combined_data.iloc[:, 7], combined_data.iloc[:, 9],label='Combined Data')  # Column 0 for X, 1 for Y
+    plt.title('NGspice output minimum noise figure NFmin  W <1u:1u:10u>, L=0.5u, Ng=<1:4> ')
+    plt.xlabel('frequency [Hz]')
+    plt.ylabel('NF min')
+    plt.grid(True)
+    plt.savefig('ngspice-nfmin.png')
+    plt.show()
+
+    plt.figure()
+    plt.semilogx(combined_data.iloc[:, 13], combined_data.iloc[:, 15],label='Combined Data')  # Column 0 for X, 1 for Y
+    plt.title('NGspice input noise resistance Rn  W <1u:1u:10u>, L=0.5u, Ng=<1:4> ')
+    plt.xlabel('frequency [Hz]')
+    plt.ylabel('Rn  [Ohm]')
+    plt.grid(True)
+    plt.savefig('ngspice-Rn.png')
+    plt.show()
+
+# Function to save the combined data to a file
+# Function to save the combined data to a file
 
 # Function to save the combined data to a file
 def save_combined_data(combined_data, output_file):
@@ -61,7 +82,7 @@ if __name__ == "__main__":
 
     # Aggregate the data from all directories
     combined_data = aggregate_data(root_dir, csv_file)
-    fname  = root_dir + 'combined.csv'
+    fname  = './sweep/combined_ngspice.csv'
     save_combined_data(combined_data, fname)
     # Plot the combined data
     plot_combined_data(combined_data)

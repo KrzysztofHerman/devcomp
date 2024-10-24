@@ -6,8 +6,6 @@ from simulator import Simulator
 
 SIMULATOR_ARGS = {
     'spectre' : ['+escchars', 
-                '=log', 
-                '.spectre.out', 
                 '-format', 
                 'psfascii', 
                 '-raw', 

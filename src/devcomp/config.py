@@ -69,7 +69,8 @@ class Config:
         Vds = VDS_max
         Vsb = self._config['SWEEP']['VSB'][0]
         NFING = self._config['SWEEP']['NFING']
-        
+     
+     
         if simulator == "spectre":
             
             netlist = [
@@ -80,24 +81,25 @@ class Config:
 		f'\n',
                 f' include "{paramfile}" ',
 		f'\n',
-                f'L1       (netl       gate_n) inductor    l=1M',
-                f'C1         (in       gate_n) capacitor   c=1M',
-                f'Vgs        (netl          GND) vsource    dc={Vgs}',
+                f'PORT1 (in 0) port r=50 num=1 dc=0 type=sine ampl=632.456m freq=1M',
+                f'PORT2 (out 0) port r=50 num=2 dc=0 type=sine ampl=6.32456u freq=1M',
+                f'V1 (net10 0) vsource dc={Vds} type=dc',
+                f'V0 (net11 0) vsource dc={Vgs} type=dc',
+     
+                f'C2 (in gate_n) capacitor c=1m',
+                f'C0 (drain_n out) capacitor c=1m',
+                f'L0 (gate_n net11) inductor l=1m',
+                f'L1 (drain_n net10) inductor l=1m',
                 f'Vb_n       (source_n      GND) vsource    dc=0',
                 f'Vs_n       (bulk_n        GND) vsource    dc=0',
-                f'V1         (in              0) vsource    dc=0 mag=1 phase=0 type=sine ampl=1 sinephase=0 freq=1K', 
-                f'Vds        (nets          GND) vsource    dc={Vds}',
-                f'vsrc       (drain_n      nets) vsource    v=1.0',
-                f'ccvs1      (sid           GND) bsource    v=1*i("vsrc:1")',
-                f'R1         (sid           GND) resistor r=1G',
 		f'\n',
-                f' simulatorOptions options psfversion="1.1.0" reltol=1e-3 vabstol=1e-6 \
-                   iabstol=1e-12 temp=27 tnom=27 scalem=1.0 scale=1.0 gmin=1e-12 rforce=1 \
-                   maxnotes=5 maxwarns=5 digits=5 cols=80 pivrel=1e-3 \
-                   sensfile="../psf/sens.output" checklimitdest=psf ignorezerovar=yes ',
+                f' simulatorOptions options psfversion="1.1.0" reltol=1e-3 vabstol=1e-6 \ ',
+                f' iabstol=1e-12 temp=27 tnom=27 scalem=1.0 scale=1.0 gmin=1e-12 rforce=1 \ ',
+                f' maxnotes=5 maxwarns=5 digits=5 cols=80 pivrel=1e-3 \ ',
+                f' sensfile="../psf/sens.output" checklimitdest=psf ignorezerovar=yes ',
 		f'\n',
-                f'  noise ( sid) noise start=1k stop=10G dec=101 annotate=status ',
-                f'\n',
+                f'sp sp ports=[PORT1 PORT2] start=100M stop=65G log=200 donoise=yes \ ',
+                f'           oprobe=PORT2 iprobe=PORT1 annotate=status ',
 		f' saveOptions options save=allpub currents=all subcktprobelvl=5 saveahdlvars=all',
                 f'\n',
                 ]

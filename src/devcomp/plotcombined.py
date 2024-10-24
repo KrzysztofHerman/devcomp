@@ -15,7 +15,7 @@ def aggregate_data(root_dir, csv_file):
             file_path = os.path.join(subdir, csv_file)
             
             # Load the CSV data with space as the separator (assuming no header)
-            data = pd.read_csv(file_path, sep=' ', header=None)
+            data = pd.read_csv(file_path, sep=',', header=None)
             #           print(data.iloc[:10])  # Print first 10 rows of the file
             if not data.empty:
                 all_data.append(data)
@@ -35,13 +35,35 @@ def aggregate_data(root_dir, csv_file):
 def plot_combined_data(combined_data):
     # Plot semilogx (logarithmic x-axis) for the combined data
     plt.figure()
-    plt.loglog(combined_data.iloc[:, 0], combined_data.iloc[:, 1],label='Combined Data')  # Column 0 for X, 1 for Y
-    plt.title('Spectre output voltage noise simulation W <1u:1u:10u>, L=0.5u, Ng=<1:4>')
+    plt.semilogx(combined_data.iloc[:, 0], combined_data.iloc[:, 1],label='Combined Data')  # Column 0 for X, 1 for Y
+    plt.title('Spectre NF simulation W = 09u , L=0.5u, Ng=4')
     plt.xlabel('frequecy [Hz]')
-    plt.ylabel('Noise PSD V^2/Hz')
+    plt.ylabel('Noise figure')
     plt.grid(True)
-    plt.savefig('spectre.png')
+    plt.savefig('spectre-NF.png')
     plt.show()
+    
+    plt.figure()
+    plt.semilogx(combined_data.iloc[:, 0], combined_data.iloc[:, 2],label='Combined Data')  # Column 0 for X, 1 for Y
+    plt.title('Spectre NFmin simulation W = 10u, L=0.5u, Ng=4')
+    plt.xlabel('frequecy [Hz]')
+    plt.ylabel('NFmin')
+    plt.grid(True)
+    plt.savefig('spectre-NFmin.png')
+    plt.show()
+    
+    plt.figure()
+    plt.semilogx(combined_data.iloc[:, 0], combined_data.iloc[:, 3],label='Combined Data')  # Column 0 for X, 1 for Y
+    plt.title('Spectre RN simulation W = 10u, L=0.5u, Ng=4')
+    plt.xlabel('frequecy [Hz]')
+    plt.ylabel('RN')
+    plt.grid(True)
+    plt.savefig('spectre-RN.png')
+    plt.show()
+
+# Function to save the combined data to a file
+
+# Function to save the combined data to a file
 
 # Function to save the combined data to a file
 def save_combined_data(combined_data, output_file):

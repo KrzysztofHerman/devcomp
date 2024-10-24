@@ -20,12 +20,17 @@ def aggregate_data(root_dir, csv_file):
             try:
                psf = PSF(file_path)
                sweep = psf.get_sweep()
-               out = psf.get_signal('out')
+               NF = psf.get_signal('NF')
+               NFmin = psf.get_signal('NFmin')
+               RN = psf.get_signal('RN')
                df = pd.DataFrame({
                'freq': sweep.abscissa,
-               'noise': out.ordinate**2 })
+               'NF': NF.ordinate, 
+               'NFmin': NFmin.ordinate, 
+               'RN': RN.ordinate 
+               })
                fname_csv = file_path + '.csv'
-               df.to_csv(fname_csv, sep=' ', index=False, header=False)
+               df.to_csv(fname_csv, sep=',', index=False, header=False)
             except Error as e:
                e.terminate()
    

@@ -58,7 +58,7 @@ class Sweep:
         if self._simulator.simulator == 'spectre':
             paramfile = self._config['MODEL']['PARAMFILE']
             with open(f'{paramfile}', 'w') as outfile:
-            	outfile.write(f'N0 (drain_n gate_n source_n bulk_n) sg13_lv_nmos w={width*1e-6} l={length*1e-6} ng={int(ngates)} ad=0 as=0 pd=0 ps=0 m=1')
+            	outfile.write(f'N0 (drain_n gate_n source_n bulk_n) sg13_lv_nmos w={width*1e-6} l={length*1e-6} ng={int(ngates)} rfmode=0 pre_layout=1 as=2.675e-12 ad=1.9e-12 ps=1.714e-05 pd=1.152e-05 m=1')
         elif self._simulator.simulator == 'ngspice':
             paramfile = self._config['MODEL']['PARAMFILE']
             with open(f'{paramfile}', 'w') as outfile:
